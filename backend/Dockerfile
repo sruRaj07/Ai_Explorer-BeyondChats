@@ -1,6 +1,6 @@
 FROM php:8.2-cli
 
-# Install system & build dependencies
+# Install system dependencies + PHP extension deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsqlite3-dev \
     libzip-dev \
     libpng-dev \
+    libicu-dev \
     libonig-dev \
     libxml2-dev \
     default-mysql-client \
@@ -18,6 +19,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         pdo \
         pdo_mysql \
         pdo_sqlite \
+        zip \
+        gd \
+        intl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -27,10 +31,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy Laravel application
+# Copy Laravel app
 COPY . .
 
-# Install PHP dependencies
+# Install PHP dependencies (Laravel)
 RUN composer install --no-dev --optimize-autoloader
 
 # Fix permissions
