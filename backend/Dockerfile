@@ -1,17 +1,25 @@
-# Base PHP image
 FROM php:8.2-cli
 
-# Install system dependencies (IMPORTANT: libsqlite3-dev)
-RUN apt-get update && apt-get install -y \
+# Install system & build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
+    curl \
+    sqlite3 \
+    libsqlite3-dev \
     libzip-dev \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    sqlite3 \
-    libsqlite3-dev \
-    && docker-php-ext-install pdo pdo_mysql pdo_sqlite
+    default-mysql-client \
+    build-essential \
+    pkg-config \
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        pdo_sqlite \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -19,7 +27,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy Laravel app
+# Copy Laravel application
 COPY . .
 
 # Install PHP dependencies
