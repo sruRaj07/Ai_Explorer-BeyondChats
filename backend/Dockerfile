@@ -35,7 +35,7 @@ WORKDIR /var/www
 COPY . .
 
 # Install PHP dependencies (Laravel)
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # Fix permissions
 RUN chmod -R 775 storage bootstrap/cache
